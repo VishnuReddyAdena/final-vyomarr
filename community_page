@@ -1,0 +1,300 @@
+// VyomarrCommunitySingleFile.jsx
+// Single-file React component that injects fonts, font-awesome and Tailwind CDN at runtime.
+// Usage: import VyomarrCommunitySingleFile from './VyomarrCommunitySingleFile'
+// and render <VyomarrCommunitySingleFile />
+
+import React, { useEffect, useRef } from 'react';
+
+export default function VyomarrCommunitySingleFile() {
+  const containerRef = useRef(null);
+
+  // Inject fonts, font-awesome and tailwind CDN (and tailwind config) into head
+  useEffect(() => {
+    const head = document.head;
+
+    // Google Fonts
+    const gf = document.createElement('link');
+    gf.rel = 'stylesheet';
+    gf.href =
+      'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@600;700&family=Roboto+Mono:ital,wght@0,400;1,400&display=swap';
+    head.appendChild(gf);
+
+    // Font Awesome
+    const fa = document.createElement('link');
+    fa.rel = 'stylesheet';
+    fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
+    head.appendChild(fa);
+
+    // Tailwind config script (must be added BEFORE loading tailwindcdn)
+    const cfg = document.createElement('script');
+    cfg.type = 'text/javascript';
+    cfg.innerHTML = `
+      tailwind = tailwind || {};
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: '#000b49',
+              orange: '#fc4c00',
+              white: '#f8f9f9',
+              mist: '#bfc3c6',
+              surface: 'rgba(255, 255, 255, 0.05)'
+            },
+            fontFamily: {
+              heading: ['Montserrat', 'sans-serif'],
+              body: ['Lato', 'sans-serif'],
+              tech: ['Roboto Mono', 'monospace']
+            },
+            boxShadow: {
+              'cosmic': '0 0 15px rgba(252, 76, 0, 0.1)',
+              'cosmic-hover': '0 0 25px rgba(252, 76, 0, 0.4)'
+            }
+          }
+        }
+      };
+    `;
+    head.appendChild(cfg);
+
+    // Tailwind CDN
+    const tw = document.createElement('script');
+    tw.src = 'https://cdn.tailwindcss.com';
+    tw.async = true;
+    head.appendChild(tw);
+
+    return () => {
+      // cleanup appended elements (optional)
+      head.removeChild(gf);
+      head.removeChild(fa);
+      head.removeChild(cfg);
+      head.removeChild(tw);
+    };
+  }, []);
+
+  // IntersectionObserver for fade-in animations
+  useEffect(() => {
+    const elements = containerRef.current?.querySelectorAll('.fade-in');
+    if (!elements || elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  const social = {
+    youtube: 'https://www.youtube.com/@vyomarr',
+    instagram: 'https://www.instagram.com/vyomarr',
+    discord: '#',
+    linkedin: 'https://www.linkedin.com/in/govindumohan/'
+  };
+
+  return (
+    <>
+      {/* Inline CSS that was in the original <style> tag */}
+      <style>{`
+        /* Base Styles */
+        body {
+          background-color: #000b49;
+          color: #f8f9f9;
+          font-family: 'Lato', sans-serif;
+        }
+        h1, h2, h3, th {
+          font-family: 'Montserrat', sans-serif;
+        }
+        /* Scroll Animation */
+        .fade-in {
+          opacity: 0;
+          transform: translateY(20px);
+          transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .fade-in.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        /* Custom Button Hover Glow */
+        .btn-cosmic {
+          transition: all 0.3s ease;
+        }
+        .btn-cosmic:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 0 20px rgba(252, 76, 0, 0.6);
+        }
+
+        /* Small responsive tweaks to ensure nice spacing if tailwind hasn't fully loaded yet */
+        .font-body { font-family: 'Lato', sans-serif; }
+        .font-heading { font-family: 'Montserrat', sans-serif; }
+        .font-tech { font-family: 'Roboto Mono', monospace; }
+      `}</style>
+
+      <div ref={containerRef} className="min-h-screen flex flex-col bg-navy text-white font-body">
+        <header className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-12 text-center">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 tracking-tight">
+            Join the <span className="text-orange">Vyomarr</span> Community
+          </h1>
+          <p className="text-mist text-lg md:text-xl font-light max-w-2xl mx-auto">
+            Connect with explorers, analyze theories, and dive deep into the cosmos across our platforms.
+          </p>
+        </header>
+
+        <main className="relative flex-grow w-full">
+          <section id="channels" className="py-12">
+            <div className="max-w-6xl mx-auto px-6">
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* YouTube Card */}
+                <div className="bg-surface border border-mist/20 rounded-xl p-8 hover:border-orange/50 transition-colors duration-300 fade-in group">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="w-12 h-12 flex items-center justify-center bg-white/5 rounded-full group-hover:bg-red-600/20 transition-colors">
+                      <i className="fab fa-youtube text-3xl text-red-500"></i>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white">YouTube</h2>
+                  </div>
+                  <p className="text-mist mb-6 font-light">
+                    For Deep Visual Exploration. Immersive storytelling and visual breakdowns of complex cosmic phenomena.
+                  </p>
+                  <div className="bg-navy/50 p-4 rounded-lg border border-mist/10 mb-6">
+                    <h3 className="text-sm font-tech text-orange mb-2 uppercase tracking-wider">Expected_Data:</h3>
+                    <ul className="list-none space-y-2 text-sm text-mist font-body">
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> "What If..." visual explorations</li>
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Scientific paradoxes explained</li>
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Cinematic space storytelling</li>
+                    </ul>
+                  </div>
+                  <a href={social.youtube} className="block w-full text-center bg-orange text-white py-3 rounded-lg font-heading font-bold text-sm uppercase tracking-wide btn-cosmic">
+                    Subscribe on YouTube
+                  </a>
+                </div>
+
+                {/* Instagram Card */}
+                <div className="bg-surface border border-mist/20 rounded-xl p-8 hover:border-orange/50 transition-colors duration-300 fade-in group">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="w-12 h-12 flex items-center justify-center bg-white/5 rounded-full group-hover:bg-pink-600/20 transition-colors">
+                      <i className="fab fa-instagram text-3xl text-pink-500"></i>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white">Instagram</h2>
+                  </div>
+                  <p className="text-mist mb-6 font-light">
+                    For Quick Insights. Daily snapshots of cosmic curiosity, polls, and quick-fire facts for your feed.
+                  </p>
+                  <div className="bg-navy/50 p-4 rounded-lg border border-mist/10 mb-6">
+                    <h3 className="text-sm font-tech text-orange mb-2 uppercase tracking-wider">Expected_Data:</h3>
+                    <ul className="list-none space-y-2 text-sm text-mist font-body">
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Visual theories & reels</li>
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Interactive story Q&As</li>
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Community art & prompts</li>
+                    </ul>
+                  </div>
+                  <a href={social.instagram} className="block w-full text-center bg-orange text-white py-3 rounded-lg font-heading font-bold text-sm uppercase tracking-wide btn-cosmic">
+                    Follow on Instagram
+                  </a>
+                </div>
+
+                {/* Discord Card */}
+                <div className="bg-surface border border-mist/20 rounded-xl p-8 hover:border-orange/50 transition-colors duration-300 fade-in group">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="w-12 h-12 flex items-center justify-center bg-white/5 rounded-full group-hover:bg-indigo-500/20 transition-colors">
+                      <i className="fab fa-discord text-3xl text-indigo-400"></i>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white">Discord</h2>
+                  </div>
+                  <p className="text-mist mb-6 font-light">
+                    For Collaboration. The mission control center for real-time discussions, debates, and theory crafting.
+                  </p>
+                  <div className="bg-navy/50 p-4 rounded-lg border border-mist/10 mb-6">
+                    <h3 className="text-sm font-tech text-orange mb-2 uppercase tracking-wider">Expected_Data:</h3>
+                    <ul className="list-none space-y-2 text-sm text-mist font-body">
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Live theory debates</li>
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Feedback on user findings</li>
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Exclusive puzzle events</li>
+                    </ul>
+                  </div>
+                  <a href={social.discord} className="block w-full text-center bg-orange text-white py-3 rounded-lg font-heading font-bold text-sm uppercase tracking-wide btn-cosmic">
+                    Join Discord Server
+                  </a>
+                </div>
+
+                {/* LinkedIn Card */}
+                <div className="bg-surface border border-mist/20 rounded-xl p-8 hover:border-orange/50 transition-colors duration-300 fade-in group">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="w-12 h-12 flex items-center justify-center bg-white/5 rounded-full group-hover:bg-blue-600/20 transition-colors">
+                      <i className="fab fa-linkedin text-3xl text-blue-500"></i>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white">LinkedIn</h2>
+                  </div>
+                  <p className="text-mist mb-6 font-light">
+                    For Vision & Insights. Follow founder Mohan Reddy Sai Govindu for the bigger picture behind Vyomarr.
+                  </p>
+                  <div className="bg-navy/50 p-4 rounded-lg border border-mist/10 mb-6">
+                    <h3 className="text-sm font-tech text-orange mb-2 uppercase tracking-wider">Expected_Data:</h3>
+                    <ul className="list-none space-y-2 text-sm text-mist font-body">
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> System design insights</li>
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Roadmap updates</li>
+                      <li className="flex items-start"><span className="text-orange mr-2">›</span> Innovation discussions</li>
+                    </ul>
+                  </div>
+                  <a href={social.linkedin} className="block w-full text-center bg-orange text-white py-3 rounded-lg font-heading font-bold text-sm uppercase tracking-wide btn-cosmic">
+                    Connect on LinkedIn
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="py-16 fade-in">
+            <div className="max-w-4xl mx-auto px-6">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-bold text-white mb-2">Protocol Selection</h2>
+                <p className="text-mist font-body">Choose your engagement frequency</p>
+              </div>
+
+              <div className="overflow-hidden rounded-xl border border-mist/20">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-white/5">
+                      <th className="px-6 py-4 border-b border-mist/20 text-sm font-bold text-orange uppercase tracking-wider">Your Engagement Style</th>
+                      <th className="px-6 py-4 border-b border-mist/20 text-sm font-bold text-orange uppercase tracking-wider">Platform</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-mist/10 bg-navy/50">
+                    <tr className="hover:bg-white/5 transition-colors">
+                      <td className="px-6 py-4 text-mist">Visual Learner / Watcher</td>
+                      <td className="px-6 py-4 font-semibold text-white">YouTube</td>
+                    </tr>
+                    <tr className="hover:bg-white/5 transition-colors">
+                      <td className="px-6 py-4 text-mist">Daily Micro-Content</td>
+                      <td className="px-6 py-4 font-semibold text-white">Instagram</td>
+                    </tr>
+                    <tr className="hover:bg-white/5 transition-colors">
+                      <td className="px-6 py-4 text-mist">Real-time Discussions</td>
+                      <td className="px-6 py-4 font-semibold text-white">Discord</td>
+                    </tr>
+                    <tr className="hover:bg-white/5 transition-colors">
+                      <td className="px-6 py-4 text-mist">Mission & Leadership</td>
+                      <td className="px-6 py-4 font-semibold text-white">LinkedIn</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="mt-12 text-center max-w-2xl mx-auto">
+                <p className="text-mist text-lg font-light leading-relaxed">
+                  If you're ready to begin, start with the one that resonates with how you explore ideas—and join the growing network of people who believe in the power of science and imagination.
+                </p>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <footer className="py-10 text-center text-sm text-mist">© Vyomarr</footer>
+      </div>
+    </>
+  );
+}
+
+<script id="dhws-dataInjector" src="../../public/dhws-data-injector.js"></script>
