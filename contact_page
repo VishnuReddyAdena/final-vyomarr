@@ -1,0 +1,400 @@
+// ContactVyomarr.jsx
+import React, { useEffect, useRef, useState } from 'react';
+
+export default function ContactVyomarr() {
+  // form state
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [file, setFile] = useState(null);
+  const [fileNameVisible, setFileNameVisible] = useState(false);
+
+  // UI state
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+
+  const formRef = useRef(null);
+  const successRef = useRef(null);
+
+  // Inject fonts + tailwind (CDN) on mount (quick prototype approach)
+  useEffect(() => {
+    const head = document.head;
+
+    const gf = document.createElement('link');
+    gf.rel = 'stylesheet';
+    gf.href =
+      'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@600;700&family=Roboto+Mono:ital,wght@0,400;1,400&display=swap';
+    head.appendChild(gf);
+
+    const twConfig = document.createElement('script');
+    twConfig.type = 'text/javascript';
+    twConfig.innerHTML = `
+      tailwind = tailwind || {};
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: '#000b49',
+              orange: '#fc4c00',
+              white: '#f8f9f9',
+              mist: '#bfc3c6',
+              surface: 'rgba(255, 255, 255, 0.05)',
+              error: '#EF4444',
+              success: '#10B981'
+            },
+            fontFamily: {
+              heading: ['Montserrat', 'sans-serif'],
+              body: ['Lato', 'sans-serif'],
+              tech: ['Roboto Mono', 'monospace'],
+            },
+            boxShadow: {
+              'cosmic': '0 0 15px rgba(252, 76, 0, 0.1)',
+              'cosmic-glow': '0 0 25px rgba(252, 76, 0, 0.3)',
+            },
+            transitionProperty: {
+              'cosmic': 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }
+          }
+        }
+      };
+    `;
+    head.appendChild(twConfig);
+
+    const fa = document.createElement('link');
+    fa.rel = 'stylesheet';
+    fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
+    head.appendChild(fa);
+
+    const tw = document.createElement('script');
+    tw.src = 'https://cdn.tailwindcss.com';
+    tw.async = true;
+    head.appendChild(tw);
+
+    return () => {
+      // tidy up appended elements (safe for dev/demos)
+      try {
+        head.removeChild(gf);
+        head.removeChild(twConfig);
+        head.removeChild(fa);
+        head.removeChild(tw);
+      } catch (e) {
+        // ignore if already removed
+      }
+    };
+  }, []);
+
+  // File change handler
+  function handleFileChange(e) {
+    const selected = e.target.files?.[0] ?? null;
+    setFile(selected);
+    setFileNameVisible(Boolean(selected));
+  }
+
+  // Validation helpers
+  function validate() {
+    const next = {};
+
+    if (!name.trim()) next.name = 'Name is required';
+    if (!email.trim()) next.email = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) next.email = 'Please enter a valid email address';
+    if (!subject) next.subject = 'Please select a subject';
+    if (!message.trim()) next.message = 'Message is required';
+    else if (message.trim().length < 10) next.message = 'Message must be at least 10 characters long';
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
+
+  // Submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    setSuccessVisible(false);
+    if (!validate()) return;
+
+    // simulate submit
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSuccessVisible(true);
+
+      // reset form
+      setName('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
+      setFile(null);
+      setFileNameVisible(false);
+      setErrors({});
+
+      // scroll to success message
+      successRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 2000);
+  }
+
+  return (
+    <>
+      {/* Inline CSS from original page */}
+      <style>{`
+        body { background-color: #000b49; color: #f8f9f9; font-family: 'Lato', sans-serif; }
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus,
+        textarea:-webkit-autofill, textarea:-webkit-autofill:hover, textarea:-webkit-autofill:focus,
+        select:-webkit-autofill, select:-webkit-autofill:hover, select:-webkit-autofill:focus {
+          -webkit-text-fill-color: #f8f9f9;
+          -webkit-box-shadow: 0 0 0px 1000px #000b49 inset;
+          transition: background-color 5000s ease-in-out 0s;
+        }
+      `}</style>
+
+      <div className="min-h-screen flex flex-col">
+        <div id="navbar" />
+
+        <section className="relative py-20 overflow-hidden">
+          <div className="absolute inset-0 opacity-40 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-orange rounded-full animate-pulse" />
+            <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white rounded-full animate-pulse delay-1000" />
+            <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-orange/60 rounded-full animate-pulse delay-500" />
+            <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-mist/80 rounded-full animate-pulse delay-1500" />
+            <div className="absolute bottom-1/3 right-1/2 w-2 h-2 bg-orange/40 rounded-full animate-pulse delay-2000" />
+          </div>
+
+          <div className="relative z-10 container mx-auto px-4 text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-6 tracking-tight">
+              Get in <span className="text-orange">Touch</span>
+            </h1>
+            <p className="text-lg md:text-xl text-mist font-body font-light mb-8 max-w-2xl mx-auto">
+              Have questions about space mysteries? Want to share your theories? We'd love to hear from you.
+            </p>
+          </div>
+        </section>
+
+        <section className="pb-20">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-8">
+                <div className="bg-surface border border-mist/10 rounded-xl p-6 md:p-8 backdrop-blur-sm shadow-cosmic">
+                  <h2 className="text-2xl md:text-3xl font-heading font-bold mb-6 text-white">Send us a Message</h2>
+
+                  <form id="contact-form" ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-mist mb-2">
+                        Full Name <span className="text-orange">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full bg-white/5 border border-mist/20 rounded-lg px-4 py-3 text-white placeholder-mist/50 focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-cosmic font-body"
+                        placeholder="Enter your full name"
+                      />
+                      {errors.name && <div className="text-error text-sm mt-1">{errors.name}</div>}
+                    </div>
+
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-mist mb-2">
+                        Email Address <span className="text-orange">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full bg-white/5 border border-mist/20 rounded-lg px-4 py-3 text-white placeholder-mist/50 focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-cosmic font-body"
+                        placeholder="Enter your email address"
+                      />
+                      {errors.email && <div className="text-error text-sm mt-1">{errors.email}</div>}
+                    </div>
+
+                    <div>
+                      <label htmlFor="subject" className="block text-sm font-medium text-mist mb-2">
+                        Subject <span className="text-orange">*</span>
+                      </label>
+                      <select
+                        id="subject"
+                        name="subject"
+                        required
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
+                        className="w-full bg-white/5 border border-mist/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-cosmic font-body appearance-none">
+                        <option value="" className="bg-navy text-mist">Select a subject</option>
+                        <option value="general" className="bg-navy">General Inquiry</option>
+                        <option value="technical" className="bg-navy">Technical Support</option>
+                        <option value="content" className="bg-navy">Content Suggestion</option>
+                        <option value="partnership" className="bg-navy">Partnership</option>
+                      </select>
+                      {errors.subject && <div className="text-error text-sm mt-1">{errors.subject}</div>}
+                    </div>
+
+                    <div>
+                      <label htmlFor="message" className="block text-sm font-medium text-mist mb-2">
+                        Message <span className="text-orange">*</span>
+                      </label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        rows="6"
+                        required
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        className="w-full bg-white/5 border border-mist/20 rounded-lg px-4 py-3 text-white placeholder-mist/50 focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-cosmic resize-vertical font-body"
+                        placeholder="Tell us about your inquiry, theory, or feedback..."
+                      />
+                      {errors.message && <div className="text-error text-sm mt-1">{errors.message}</div>}
+                    </div>
+
+                    <div>
+                      <label htmlFor="attachment" className="block text-sm font-medium text-mist mb-2">
+                        Attachment (Optional)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="file"
+                          id="attachment"
+                          name="attachment"
+                          accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                          className="hidden"
+                          onChange={handleFileChange}
+                        />
+                        <label htmlFor="attachment" className="flex items-center justify-center w-full bg-white/5 border border-mist/20 border-dashed rounded-lg px-4 py-6 cursor-pointer hover:border-orange hover:bg-white/10 transition-cosmic group">
+                          <div className="text-center">
+                            <svg className="w-8 h-8 text-mist group-hover:text-orange transition-colors mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p className="text-mist text-sm">
+                              <span className="text-orange font-bold">Click to upload</span> or drag and drop
+                            </p>
+                            <p className="text-mist/50 text-xs mt-1 font-tech">PDF, DOC, TXT, JPG, PNG (max 10MB)</p>
+                          </div>
+                        </label>
+                      </div>
+                      {fileNameVisible && <div id="file-name" className="text-sm text-orange mt-2 font-tech">Selected: {file?.name}</div>}
+                    </div>
+
+                    <div className="pt-4">
+                      <button
+                        type="submit"
+                        id="submit-btn"
+                        disabled={isSubmitting}
+                        className="w-full bg-orange text-white py-4 px-6 rounded-lg font-heading font-bold uppercase tracking-wide hover:bg-[#e04400] focus:outline-none focus:ring-2 focus:ring-orange focus:ring-offset-2 focus:ring-offset-navy transition-all shadow-cosmic transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span id="submit-text">{isSubmitting ? 'Sending...' : 'Send Message'}</span>
+                        <span id="submit-spinner" className={`${isSubmitting ? 'inline-block' : 'hidden'} ml-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin`} />
+                      </button>
+                    </div>
+                  </form>
+
+                  <div ref={successRef} id="success-message" className={`${successVisible ? '' : 'hidden'} mt-6 p-4 bg-green-900/20 border border-green-500/30 rounded-lg`}>
+                    <div className="flex items-center">
+                      <svg className="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                      </svg>
+                      <p className="text-green-400 font-medium">Message sent successfully! We'll get back to you within 24 hours.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4">
+                <div className="space-y-6">
+                  <div className="bg-surface border border-mist/10 rounded-xl p-6 shadow-cosmic">
+                    <h3 className="text-xl font-heading font-bold mb-4 text-white">Contact Information</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-start space-x-3 group">
+                        <div className="p-2 bg-white/5 rounded-lg group-hover:bg-orange/20 transition-colors">
+                          <svg className="w-5 h-5 text-orange" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="font-medium text-white">Email</p>
+                          <p className="text-mist text-sm font-tech break-all">mohanreddysaigovindu@gmail.com</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-surface border border-mist/10 rounded-xl p-6 shadow-cosmic">
+                    <h3 className="text-xl font-heading font-bold mb-4 text-white">Response Time</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+                        <div>
+                          <p className="text-sm font-medium text-white">General Inquiries</p>
+                          <p className="text-xs text-mist font-tech">Within 24 hours</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.6)]" />
+                        <div>
+                          <p className="text-sm font-medium text-white">Technical Support</p>
+                          <p className="text-xs text-mist font-tech">Within 48 hours</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-orange rounded-full shadow-[0_0_8px_rgba(252,76,0,0.6)]" />
+                        <div>
+                          <p className="text-sm font-medium text-white">Partnerships</p>
+                          <p className="text-xs text-mist font-tech">Within 1 week</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-surface border border-mist/10 rounded-xl p-6 shadow-cosmic">
+                    <h3 className="text-xl font-heading font-bold mb-4 text-white">Follow Us</h3>
+                    <div className="flex space-x-4">
+                      <a href="https://www.linkedin.com/in/govindumohan/" className="text-mist hover:text-white bg-white/5 hover:bg-orange p-3 rounded-full transition-all duration-300 transform hover:-translate-y-1">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                      </a>
+
+                      <a href="https://www.youtube.com/@vyomarr" className="text-mist hover:text-white bg-white/5 hover:bg-orange p-3 rounded-full transition-all duration-300 transform hover:-translate-y-1">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                      </a>
+
+                      <a href="https://www.instagram.com/vyomarr/" className="text-mist hover:text-white bg-white/5 hover:bg-orange p-3 rounded-full transition-all duration-300 transform hover:-translate-y-1">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                      </a>
+
+                      <a href="#" className="text-mist hover:text-white bg-white/5 hover:bg-orange p-3 rounded-full transition-all duration-300 transform hover:-translate-y-1">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z"/></svg>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="bg-surface border border-mist/10 rounded-xl p-6 shadow-cosmic">
+                    <h3 className="text-xl font-heading font-bold mb-4 text-white">Quick Help</h3>
+                    <div className="space-y-3">
+                      <a href="how to submit a theory.html" className="block text-mist hover:text-orange transition-colors text-sm font-body">
+                        How to submit a theory?
+                      </a>
+                      <a href="issues.html" className="block text-mist hover:text-orange transition-colors text-sm font-body">
+                        Account & Login Issues
+                      </a>
+                      <a href="#" className="block text-mist hover:text-orange transition-colors text-sm font-body">
+                        Content Guidelines
+                      </a>
+                      <a href="data.html" className="block text-mist hover:text-orange transition-colors text-sm font-body">
+                        Privacy & Data Policy
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <div id="footer" />
+      </div>
+    </>
+    );
+}
+<script id="dhws-dataInjector" src="../../public/dhws-data-injector.js"></script>
