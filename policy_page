@@ -1,0 +1,181 @@
+import React, { useEffect } from "react";
+
+// PrivacyPolicy.jsx
+// Single-file React component converted from the provided HTML.
+// - Injects Google Fonts and sets document title
+// - Keeps original styles (converted to React-friendly CSS inside a <style> tag)
+// - Exports default PrivacyPolicy component
+
+export default function PrivacyPolicy() {
+  useEffect(() => {
+    // Set document title
+    document.title = "Privacy Policy - Vyomarr Space Explorer";
+
+    // Inject Google Fonts (preconnect and link)
+    const preconnect1 = document.createElement("link");
+    preconnect1.rel = "preconnect";
+    preconnect1.href = "https://fonts.googleapis.com";
+
+    const preconnect2 = document.createElement("link");
+    preconnect2.rel = "preconnect";
+    preconnect2.href = "https://fonts.gstatic.com";
+    preconnect2.crossOrigin = "anonymous";
+
+    const fontLink = document.createElement("link");
+    fontLink.href =
+      "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@600;700&family=Roboto+Mono:ital,wght@0,400;1,400&display=swap";
+    fontLink.rel = "stylesheet";
+
+    document.head.appendChild(preconnect1);
+    document.head.appendChild(preconnect2);
+    document.head.appendChild(fontLink);
+
+    return () => {
+      // cleanup on unmount
+      document.head.removeChild(preconnect1);
+      document.head.removeChild(preconnect2);
+      if (document.head.contains(fontLink)) document.head.removeChild(fontLink);
+    };
+  }, []);
+
+  return (
+    <div style={{ minHeight: "100vh", background: "transparent" }}>
+      {/* Navbar placeholder (keeps same ID so any existing load.js can target it) */}
+      <div id="navbar" />
+
+      <main>
+        <div className="container">
+          <h1>Privacy Policy</h1>
+
+          <h2>1. Introduction</h2>
+          <p>
+            Vyomarr Space Explorer ("we" or "us" or "Company") operates the
+            https://www.vyomarr.com website (hereinafter referred to as
+            "Service").
+          </p>
+          <p>
+            Our Privacy Policy governs your visit to https://www.vyomarr.com and
+            explains how we collect, safeguard, and disclose information that
+            results from your use of our Service.
+          </p>
+
+          <h2>2. Information Collection and Use</h2>
+          <p>
+            We collect information about you when you provide it to us and when
+            third parties provide us with information about you. Here are the
+            types of information we may collect:
+          </p>
+          <ul>
+            <li>
+              <strong>Personal Data:</strong> Personally identifiable
+              information, such as your name, shipping address, email address,
+              and telephone number, and demographic information, such as your
+              age, gender, hometown, and interests, that you voluntarily give
+              to us.
+            </li>
+            <li>
+              <strong>Derivative Data:</strong> Information our servers
+              automatically collect when you access the Service, such as your
+              IP address, your browser type, your operating system, your
+              Uniform Resource Locator (URL) referrer, and the dates and times
+              of your Service access.
+            </li>
+            <li>
+              <strong>Financial Data:</strong> Financial information, such as
+              data related to your payment method (valid credit card number,
+              card brand, expiration date) that we may collect when you
+              purchase, order, return, exchange, or request information about
+              our services.
+            </li>
+          </ul>
+
+          <h2>3. Use of Your Information</h2>
+          <p>
+            Having accurate information about you permits us to provide you with
+            a smooth, efficient, and customized experience. Specifically, we
+            may use information collected about you via the Service to:
+          </p>
+          <ul>
+            <li>
+              Generate a personal profile about you so that future visits to
+              the Service will be personalized as possible.
+            </li>
+            <li>Increase the efficiency and operation of the Service.</li>
+            <li>Monitor and analyze usage and trends to improve your experience with the Service.</li>
+            <li>Notify you of updates to the Service.</li>
+            <li>Offer new products, services, and/or recommendations to you.</li>
+          </ul>
+
+          <h2>4. Disclosure of Your Information</h2>
+          <p>We may share information we have collected about you in certain situations:</p>
+          <ul>
+            <li>
+              <strong>By Law or to Protect Rights:</strong> If we believe the
+              release of information is necessary to comply with the law.
+            </li>
+            <li>
+              <strong>Third-Party Service Providers:</strong> We may share your
+              information with parties who provide services for us, including
+              payment processors, data analysis providers, email delivery
+              services, customer service, and our marketing associates.
+            </li>
+            <li>
+              <strong>Business Transfers:</strong> If Company is involved in a
+              merger, acquisition, or asset sale, your information may be
+              transferred as part of that transaction.
+            </li>
+          </ul>
+
+          <h2>5. Security of Your Information</h2>
+          <p>
+            We use administrative, technical, and physical security measures to
+            protect your personal information. However, despite our
+            safeguards, nothing is completely secure.
+          </p>
+
+          <h2>6. Contact Us</h2>
+          <p>If you have questions or comments about this Privacy Policy, please contact us at:</p>
+          <ul>
+            <li>Email: privacy@vyomarr.com</li>
+            <li>Address: Vyomarr Space Explorer, [Your Address]</li>
+          </ul>
+        </div>
+      </main>
+
+      {/* Footer placeholder */}
+      <div id="footer" />
+
+      {/* Inline styles converted from original HTML */}
+      <style>{`
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html, #root { height: 100%; }
+
+        main { padding-top: 100px; padding-bottom: 50px; min-height: calc(100vh - 150px); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; font-family: 'Lato', sans-serif; color: #f8f9f9; }
+
+        h1, h2 { font-family: 'Montserrat', sans-serif; margin: 2rem 0 1rem 0; color: #fc4c00; }
+        h1 { font-size: 2.5rem; margin-bottom: 1.5rem; }
+        h2 { font-size: 1.8rem; }
+
+        p { margin-bottom: 1rem; color: #bfc3c6; line-height: 1.6; }
+        ul, ol { margin-left: 2rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.5rem; color: #bfc3c6; }
+
+        #navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; }
+        #footer { margin-top: 50px; clear: both; }
+
+        /* Page gradient background */
+        :root { --bg1: #000b49; --bg2: #0a1a5e; }
+        body { background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%); }
+
+        @media (max-width: 768px) {
+          .container { padding: 1rem; }
+          h1 { font-size: 2rem; }
+          h2 { font-size: 1.4rem; }
+        }
+      `}</style>
+    </div>
+  );
+}
